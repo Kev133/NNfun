@@ -1,0 +1,30 @@
+
+ parameters after reading inputs: 
+alpha  = 1.000000e+000 
+R_L  = 1.000000e-008 
+p^2  = 2.500000e-002 
+Mass of monomer  = 7.206000e+001 
+N_e  = 6.500000e+001 
+Temperature (input) = 4.731500e+002 
+G_0 = 7.323902e+005 
+tau_e = 9.000000e-007 sec 
+ 
+compound arm prefactor includes effective armlen.
+Reptation in thin tube.
+
+ End of input parameters 
+maximum priority = 1 
+ maximum seniority = 1 
+Branching topology of the polymers
+Number of branches per molecule = 0.000000e+000 
+number of linear molecules = 300 
+mass fraction of linear molecules = 1.000000e+000 
+number of star molecules = 0 
+mass fraction of star molecules = 0.000000e+000 
+number of comb molecules = 0 
+mass fraction of comb molecules = 0.000000e+000 
+number of branch-on-branch molecules = 0 
+mass fraction of branch-on-branch molecules = 0.000000e+000 
+Following relaxation to calculate linear rheology
+zero-shear viscosity = 1.587594e+001 
+|complex-viscosity|(1.0e-6) = 1.692172e+001 

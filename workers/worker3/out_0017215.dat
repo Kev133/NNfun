@@ -1,0 +1,10 @@
+ ODE simulation OK.
+ MC simulation OK.
+ BoB simulation OK.
+
+ Mn (ODE)      =    19.266058429988458     
+ Mn (MC)       =    19.345488064774088     
+ Mw (ODE)      =    33.221882184352225     
+ Mw (MC)       =    33.259530493657174     
+ G (crossover) =    107170.25000000000     
+ G (plateau)   =    337456.50000000000     
