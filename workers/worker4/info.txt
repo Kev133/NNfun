@@ -26,5 +26,5 @@ mass fraction of comb molecules = 0.000000e+000
 number of branch-on-branch molecules = 0 
 mass fraction of branch-on-branch molecules = 0.000000e+000 
 Following relaxation to calculate linear rheology
-zero-shear viscosity = 5.811525e+001 
-|complex-viscosity|(1.0e-6) = 5.946494e+001 
+zero-shear viscosity = 8.193859e+002 
+|complex-viscosity|(1.0e-6) = 8.193724e+002 

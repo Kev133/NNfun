@@ -17,7 +17,7 @@ maximum priority = 1
  maximum seniority = 1 
 Branching topology of the polymers
 Number of branches per molecule = 0.000000e+000 
-number of linear molecules = 900 
+number of linear molecules = 300 
 mass fraction of linear molecules = 1.000000e+000 
 number of star molecules = 0 
 mass fraction of star molecules = 0.000000e+000 
@@ -26,5 +26,5 @@ mass fraction of comb molecules = 0.000000e+000
 number of branch-on-branch molecules = 0 
 mass fraction of branch-on-branch molecules = 0.000000e+000 
 Following relaxation to calculate linear rheology
-zero-shear viscosity = 4.057243e+001 
-|complex-viscosity|(1.0e-6) = 4.183670e+001 
+zero-shear viscosity = 5.067517e+001 
+|complex-viscosity|(1.0e-6) = 5.198537e+001 

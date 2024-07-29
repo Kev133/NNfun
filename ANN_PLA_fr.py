@@ -8,20 +8,22 @@ import seaborn as sns
 import numpy as np
 import time
 import tensorboard
+folder = "6000"
+num_of_data =6000
 def extract_training_data_inputs():
 
     temperature = []
     catalyst_conc= []
     cocatalyst_conc = []
 
-    files = os.listdir("C:\\Users\\Kevin\\Desktop\\NN_data\\15000\\parsfiles")#PycharmProjects\\NNfun\\pars"
+    files = os.listdir("C:\\Users\\Kevin\\Desktop\\NN_data\\"+folder+"\\parsfiles")#PycharmProjects\\NNfun\\pars"
     par_files = [file for file in files if file.startswith("par_")] #vypada to jako necitelny kod, ale to prvni file je
     #expression takze bych tam treba mohl dat float(files) a kazdou tu file to iterativne prevede na float verzi
 
-    par_files = par_files[0:15000]
+    par_files = par_files[0:num_of_data]
 
     for par_file in par_files:
-            with open("C:\\Users\\Kevin\\Desktop\\NN_data\\15000\\parsfiles\\"+par_file, "r") as f:
+            with open("C:\\Users\\Kevin\\Desktop\\NN_data\\"+folder+"\\parsfiles\\"+par_file, "r") as f:
                 lines = f.readlines()
                 temperature.append(float(lines[0]))
                 catalyst_conc.append(float(lines[1]))
@@ -37,12 +39,12 @@ def extract_training_data_outputs():
     Mw_MC = []
     G_crossover = []
     G_plateau = []
-    files = os.listdir("C:\\Users\\Kevin\\Desktop\\NN_data\\15000\\outfiles")#PycharmProjects\\NNfun\\pars"
+    files = os.listdir("C:\\Users\\Kevin\\Desktop\\NN_data\\"+folder+"\\outfiles")#PycharmProjects\\NNfun\\pars"
     out_files = [file for file in files if file.startswith("out_")]  # vypada to jako necitelny kod, ale to prvni file
     #je expression takze bych tam treba mohl dat float(files) a kazdou tu file to iterativne prevede na float verzi
-    out_files = out_files[0:15000]
+    out_files = out_files[0:num_of_data]
     for out_file in out_files:
-        with open("C:\\Users\\Kevin\\Desktop\\NN_data\\15000\\outfiles\\"+out_file, "r") as f:
+        with open("C:\\Users\\Kevin\\Desktop\\NN_data\\"+folder+"\\outfiles\\"+out_file, "r") as f:
             for line in f:
                 if "(" in line:  # finds the correct lines
                     values.append(line)
@@ -65,8 +67,8 @@ def modify_training_data(data_input,data_output):
     mn_ode_data = data_output[0]
     mw_ode_data = data_output[1]
 
-    G_crossover_data = [x/20000 for x in data_output[2]]
-    G_plateau_data = [x/1e5 for x in data_output[3]]
+    G_crossover_data = [x/20000 for x in data_output[2]] #/20000
+    G_plateau_data = [x/1e5 for x in data_output[3]]     #/1e5
 
     dataset = pd.DataFrame(list(zip(mn_ode_data, mw_ode_data,G_crossover_data,G_plateau_data,temp_data,cat_conc_data,cocat_conc_data)),
             columns =["Mn_ODE", "Mw_ODE","G_crossover","G_plateau","temperature","catalyst_conc","cocatalyst_conc"])
@@ -78,7 +80,7 @@ def modify_training_data(data_input,data_output):
     #vybiram si jaka cast dataset pujde na trenovani site a jak na testovani (frac), random state je asi
     #kdybych chtel jakoby stejny seed toho jake indexy se rozdeli do jakych datasetu
 
-    train_dataset = dataset.sample(frac=0.9, random_state=0)
+    train_dataset = dataset.sample(frac=0.9, random_state=3)
     test_dataset = dataset.drop(train_dataset.index)
 
     #nejake statistiky kdyby me to zajimalo
@@ -106,20 +108,21 @@ def modify_training_data(data_input,data_output):
                             test_labels3.reindex(test_labels1.index),test_labels4.reindex(test_labels1.index)], axis=1)
     return train_dataset,test_dataset,train_stats,train_labels,test_labels
 def norm(x,train_stats):
-    """Z-score normalization, the mean of the normalized values is 0
+    """Standard normalization of values between 0 and 1, in the comment is so called
+    Z-score normalization, the mean of the normalized values is 0
     and the standard deviation of the normalized values is 1"""
-
-    return (x-train_stats["mean"])/train_stats["std"]
+    #(x-train_stats["mean"])/train_stats["std"]
+    return (x-x.min())/(x.max()-x.min())
 
 
 def build_model(train_dataset):
     # Create a Sequential model, which is a linear stack of layers, simple feed-forward NN
     model = keras.Sequential([
         # Add a dense (fully connected) layer with 64 units and ReLU activation function.
-        layers.Dense(500, activation=tf.nn.tanh, input_shape=[len(train_dataset.keys())]),  #input shape is 3 (Tdeg,cat_conc,cocat_conc)
-        layers.Dropout(0.2),
-        layers.Dense(100, activation=tf.nn.relu),
-        layers.Dropout(0.2),
+        layers.Dense(300, activation=tf.nn.tanh, input_shape=[len(train_dataset.keys())]),  #input shape is 3 (Tdeg,cat_conc,cocat_conc)
+        #layers.Dropout(0),
+        layers.Dense(100, activation=tf.nn.tanh),
+
 
 
         # Add another dense layer with 64 units and ReLU activation function.
@@ -166,7 +169,7 @@ def plot_history(history):
     plt.plot(hist["epoch"],hist["mape"],label = "Train error")
     plt.plot(hist["epoch"],hist["val_mape"],label = "Validation error")
     plt.legend()
-    plt.ylim([0,7])
+    plt.ylim([0,6])
     plt.show()
 
 def main_function():
@@ -186,7 +189,10 @@ def main_function():
     normed_test_data = norm(test_dataset, train_stats)
     # The 'build_model' function creates and configures a neural network model for a regression task.
     model = build_model(train_dataset)
-    EPOCHS = 15000
+
+    EPOCHS = 2400
+
+
     early_stop = keras.callbacks.EarlyStopping(monitor="val_loss", patience=300)
     history = model.fit(
         normed_train_data,train_labels,epochs=EPOCHS,validation_split=0.2,verbose=2,callbacks=early_stop)
@@ -195,26 +201,48 @@ def main_function():
     plot_history(history)
 
     test_predictions = model.predict(normed_test_data)  #add.flaten() if something does not work
-
+    print(test_predictions)
     start = time.time()
     #TODO musis to tam dat normovane, pak uz to pujde
-    print(model(np.array([[120,1.8,80]])))
+    print(model(np.array([[0.7,0.8,0.7]])))
     end = time.time()
     print(f"Time to evaluate one set of reaction conditions {(end - start)*1000} miliseconds")
 
+    num_of_test_points =40
 
-    plt.title("SM vs original model, epochs = "+str(EPOCHS)+", MAPE = " +str(round(mape, 2))+" % \n ",fontsize=15)
-    plt.scatter(test_labels["G_crossover"], test_predictions[:, 2], label="$cross$", facecolors='none', edgecolors='g')
-    plt.scatter(test_labels["G_plateau"], test_predictions[:, 3], label="$plat$", facecolors='none', edgecolors='y')
-    plt.scatter(test_labels["Mw_ODE"],test_predictions[:,1], label = "$M_w$",facecolors='none', edgecolors='r')
-    plt.scatter(test_labels["Mn_ODE"],test_predictions[:,0], label = "$M_n$",facecolors='none', edgecolors='b')
-    plt.xlabel("True values of $M_w$,$M_n$ [kg/mol],$cross$ and $plat$  ", fontsize=13)
-    plt.ylabel("Predicted values of  $M_w$,$M_n$ [kg/mol],$cross$ and $plat$",fontsize=13)
-    x= range(0,50)
+    plt.figure(figsize=(4, 4))
+    #plt.title("SM vs deductive model, epochs = "+str(EPOCHS)+", MAPE = " +str(round(mape, 2))+" % \n ",fontsize=15)
+    plt.scatter(test_labels["Mw_ODE"][0:num_of_test_points], test_predictions[:, 1][0:num_of_test_points],
+                label="$M_w$", facecolors='none', edgecolors='r')
+    plt.scatter(test_labels["Mn_ODE"][0:num_of_test_points], test_predictions[:, 0][0:num_of_test_points],
+                label="$M_n$", facecolors='none', edgecolors='b')
+    #plt.xlabel("$M_w$ [kg/mol] and $M_n$ [kg/mol] predicted by deductive model", fontsize=13,labelpad=10)
+    #plt.ylabel("$M_w$ [kg/mol] and $M_n$ [kg/mol] predicted by surrogate model",fontsize=13,labelpad=10)
+
+    x= range(0,110)
     y=x
     plt.plot(x,y,color="black",linewidth=0.5)
     plt.tick_params(labelsize=13)
     plt.legend(fontsize=13)
+    plt.savefig('Mn.png', dpi=700)
+    plt.show()
+
+
+    plt.figure(figsize=(4, 4))
+    #plt.title("SM vs deductive model, epochs = " + str(EPOCHS) + ", MAPE = " + str(round(mape, 2)) + " % \n ",
+    #          fontsize=15)
+    plt.scatter((test_labels["G_crossover"]*20000)[0:num_of_test_points], (test_predictions[:, 2]*20000)[0:num_of_test_points], label="$G_c$", facecolors='none', edgecolors='g')
+    plt.scatter((test_labels["G_plateau"]*1e5)[0:num_of_test_points], (test_predictions[:, 3]*1e5)[0:num_of_test_points], label="$G^0_N$", facecolors='none', edgecolors='y')
+    #plt.xlabel("$G_c$ [Pa] and $G^0_N$ [Pa] predicted by deductive model", fontsize=13, labelpad=10)
+    #plt.ylabel("$G_c$ [Pa] and $G_N^0$ [Pa] predicted by surrogate model", fontsize=13, labelpad=10)
+    x=[0,10000000]
+    y = x
+    plt.plot(x, y, color="black", linewidth=0.5)
+    plt.tick_params(labelsize=13)
+    plt.legend(fontsize=13)
+    plt.xscale(value="log")
+    plt.yscale(value="log")
+    plt.savefig('G_mod.png', dpi=700)
     plt.show()
 
 main_function()

@@ -10,26 +10,28 @@ import ode_PLA
 import time
 import tensorboard
 sampler = qmc.LatinHypercube(d=3,seed=2)
-sample = sampler.random(n=800)
+sample = sampler.random(n=6000)
 # [Tdeg,catalyst concentration ,cocatalyst concentration]
-l_bounds = [140,0.5,40]
-u_bounds = [160,2,120]
+l_bounds = [140,0.5,20]
+u_bounds = [160,2,80]
 
 
 training_data = qmc.scale(sample,l_bounds,u_bounds)
 Tdeg_data = training_data[:,0]
 cat_conc_data = training_data[:,1]
 cocat_conc_data = training_data[:,2]
-# fig = plt.figure(figsize=(12, 12))
-# ax = fig.add_subplot(projection='3d')
-# label_pad = 10
-# font_S =14
-# ax.scatter(training_data[:,0],training_data[:,1],training_data[:,2],s=50)
-# ax.set_xlabel('Reaction temperature [°C]',fontsize=font_S,labelpad=label_pad)
-# ax.set_ylabel('Concentration of catalyst [mol/m3]',fontsize=font_S,labelpad=label_pad)
-# ax.set_zlabel('Concentration of co-catalyst [mol/m3]',fontsize=font_S,labelpad=label_pad)
-# ax.tick_params(labelsize=font_S)
-# plt.show()
+fig = plt.figure(figsize=(15, 15))
+ax = fig.add_subplot(projection='3d')
+label_pad = 12
+font_S =15
+
+ax.scatter(training_data[:,0],training_data[:,1],training_data[:,2],s=50,edgecolors="black",linewidths = 0.7)
+ax.set_xlabel('Reaction temperature [°C]',fontsize=font_S,labelpad=label_pad)
+ax.set_ylabel('Concentration of catalyst [mol/m$^3$]',fontsize=font_S,labelpad=label_pad)
+ax.set_zlabel('Concentration of co-catalyst [mol/m$^3$]',fontsize=font_S,labelpad=label_pad)
+ax.tick_params(labelsize=font_S)
+plt.savefig('LHS.png', dpi=1000)
+plt.show()
 pocetni_list = []
 hmotnostni_list = []
 konverze_list = []
@@ -47,7 +49,7 @@ dataset = pd.DataFrame(list(zip(pocetni_list, hmotnostni_list,konverze_list,Tdeg
 print(dataset.tail())
 # plt.scatter(pocetni_list,Tdeg_data)
 #plt.show()
-train_dataset = dataset.sample(frac=0.998, random_state=0)
+train_dataset = dataset.sample(frac=0.9, random_state=0)
 test_dataset = dataset.drop(train_dataset.index)
 #sns.pairplot(train_dataset[['Pocetni', 'hmotnostni', 'teplota', 'kat konc', "kokat konc"]], diag_kind='kde')
 #plt.show()

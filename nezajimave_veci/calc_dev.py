@@ -34,7 +34,7 @@ for file in files:
             Mn_MC.append(float(list[1][20:41]))
             Mw_ODE.append(float(list[2][20:41]))
             Mw_MC.append(float(list[3][20:41]))
-            G_crossover.append(float(list[5][20:41]))
+            G_crossover.append(float(list[3][20:41]))
             G_plateau.append(float(list[5][20:41]))
             list=[]
 
@@ -42,11 +42,11 @@ MC_stovky=[]
 MC_tisicovky=[]
 
 for num in range (0,len(G_crossover)+1):
-    if num < 1300:
+    if num < 800:
 
         if num%100 == 0 and num!=0:
             MC_stovky.append(G_crossover[num-100:num])
-    elif num < 1901:
+    elif num < 1801:
         if num % 100 == 0 and num != 0:
             print(num)
             MC_tisicovky.append(G_crossover[num - 100:num])
@@ -73,19 +73,22 @@ print(f"variacni koeficient stovky {variacni_koeficient}")
 print("\nNásledují tísícovky od 1000 do 10 000\n")
 
 
-# for tisicovka in MC_tisicovky:
-#     odchylky_tisicovky.append(statistics.stdev(tisicovka))
-#     prumer_tisicovky.append(statistics.mean(tisicovka))
-#     variacni_koeficient_tisicovky.append(statistics.stdev(tisicovka) / statistics.mean(tisicovka))
-# print(f"Odchylky tisicovky {odchylky_tisicovky}")
-# print(f"prumer tisicovky{prumer_tisicovky}")
-# print(f"variacni koeficient tisicovky {variacni_koeficient_tisicovky}")
-#
-# cisla=[200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,12000]
-# odchylky = variacni_koeficient+variacni_koeficient_tisicovky
-#
-# plt.plot(cisla,odchylky,"-",markersize=0.8,label="huuh")
-# plt.title("plateau modulus deviation profile ")
-# plt.xlabel("number of simulated particles",fontsize = 10)
-# plt.ylabel("plateau modulus standard deviation/mean",fontsize = 10)
-# plt.show()
+for tisicovka in MC_tisicovky:
+    odchylky_tisicovky.append(statistics.stdev(tisicovka))
+    prumer_tisicovky.append(statistics.mean(tisicovka))
+    variacni_koeficient_tisicovky.append(statistics.stdev(tisicovka) / statistics.mean(tisicovka))
+print(f"Odchylky tisicovky {odchylky_tisicovky}")
+print(f"prumer tisicovky{prumer_tisicovky}")
+print(f"variacni koeficient tisicovky {variacni_koeficient_tisicovky}")
+
+cisla=[200,300,400,500,600,700,800,900,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000]
+odchylky = variacni_koeficient+variacni_koeficient_tisicovky
+plt.figure(figsize=(6, 4))
+plt.plot(cisla,odchylky,linewidth=2,marker="o")
+plt.xscale(value="log")
+plt.grid( which='major', color='tab:gray', linestyle='-',axis="x",linewidth=1)
+
+plt.grid( which='minor', color='tab:gray', linestyle='--',axis="x",linewidth=0.5)
+plt.tick_params(labelsize=16)
+plt.savefig('odchylkymw.png', dpi=700)
+plt.show()

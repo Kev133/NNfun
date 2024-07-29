@@ -7,8 +7,8 @@ def generate_latin_hypercube(num_of_samples):
     sampler = qmc.LatinHypercube(d=3,seed=1)
     sample = sampler.random(n=num_of_samples)
     # [Tdeg,catalyst concentration ,cocatalyst concentration]
-    l_bounds = [155,1.5,40] #120, 0.5 40
-    u_bounds = [160,2,120]  #160 2 120
+    l_bounds = [140,0.5,20] #120, 0.5 40
+    u_bounds = [160,2,80]  #160 2 120
 
 
     training_data = qmc.scale(sample,l_bounds,u_bounds)
@@ -38,7 +38,7 @@ def generate_pars_files(data):
         "polymer_melt_density": 1.09,
         "chain_relaxation_time": 9.0e-7,
         "avg_monomer_units_entanglements": 65,
-        "num_particles_mc_simulation": 5000
+        "num_particles_mc_simulation": 7000
     }
 
     length_data = len(data[0])
@@ -88,13 +88,29 @@ def delete_out_workers():
         path = "workers/"+str(worker)
         worker_dirs = os.listdir(path)
         [os.remove(path+"/"+file) for file in worker_dirs if file.startswith("out")]
+def move_files():
+    worker_dirs = os.listdir("workers")
+    worker_list = [file for file in worker_dirs if file.startswith("worker")]
+    for worker in worker_list:
+        path = "workers/" + str(worker)
+        worker_dirs = os.listdir(path)
+        [os.rename(path + "/" + file,"C:\\Users\\Kevin\\Desktop\\NN_data\\6000\\outfiles\\"+file) for file in worker_dirs if file.startswith("out")]
 
+    worker_dirs = os.listdir("workers")
+    worker_list = [file for file in worker_dirs if file.startswith("worker")]
+    for worker in worker_list:
+        path = "workers/" + str(worker)
+        worker_dirs = os.listdir(path)
+        [os.rename(path + "/" + file, "C:\\Users\\Kevin\\Desktop\\NN_data\\6000\\parsfiles\\" + file) for file in
+         worker_dirs if file.startswith("par")]
 
-num_of_samples = 19200
-print(num_of_samples/6)
-if num_of_samples%6==0:
-    #lhs_nums = generate_latin_hypercube(num_of_samples)
-    #generate_pars_files(lhs_nums)
-    distribute_pars_files()
-#delete_pars_workers()
-#delete_out_workers()
+# num_of_samples = 6000
+# print(num_of_samples/6)
+# if num_of_samples%6==0:
+#
+#     lhs_nums = generate_latin_hypercube(num_of_samples)
+#     generate_pars_files(lhs_nums)
+#     distribute_pars_files()
+move_files()
+# delete_pars_workers()
+# delete_out_workers()

@@ -5,8 +5,8 @@ that are simulated. The user can choose how many files he wants to generate and 
 """
 
 default_values= {
-    "temp": 160.0,
-    "catalyst": 1.0,
+    "temp": 160,
+    "catalyst": 1,
     "co_catalyst": 60,
     "octanoic_acid": 0.36,
     "activation_rate": 1.0e6,
@@ -27,24 +27,24 @@ default_values= {
     "num_chain_in_bob_simulation": 300
 }
 
-starting_point = 100
-ending_point = 1000
-number_of_files_for_one_MC_num = 100
-hundreds = np.arange(starting_point,1200,100) # start, end, step
-# thousands = np.arange(1000,10000,1000)
-# ten_thousands = np.arange(10000,ending_point+2000,2000)
-
-#list_raw = np.concatenate((hundreds,thousands,ten_thousands),axis=None)
-list = []
-for number in hundreds:
-    for i in range(1,number_of_files_for_one_MC_num+1):
-        list.append(number)
-
-print(list)
-
+# starting_point = 100
+# ending_point = 1000
+# number_of_files_for_one_MC_num = 120
+# hundreds = np.arange(starting_point,1200,100) # start, end, step
+# # thousands = np.arange(1000,10000,1000)
+# # ten_thousands = np.arange(10000,ending_point+2000,2000)
+#
+# #list_raw = np.concatenate((hundreds,thousands,ten_thousands),axis=None)
+# list = []
+# for number in hundreds:
+#     for i in range(1,number_of_files_for_one_MC_num+1):
+#         list.append(number)
+#
+# print(list)
+list = range(1,40)
 i=1
 for number in list:
-    default_values.update({"num_chain_in_bob_simulation":number})
+    #default_values.update({"num_chain_in_bob_simulation":number})
     zeros_num = 7-len(str(i))
     num_code = str(0)*zeros_num+str(i)
     path = "par_"+num_code+".dat"
